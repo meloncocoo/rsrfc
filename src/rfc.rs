@@ -142,11 +142,11 @@ pub struct RfcFieldDesc<'conn> {
     decimals: u32,
     type_desc_handle: *mut RfcDataContainerHandle,
     extended_description: *mut RfcExtendedDescription,
-    rfc_api: &'conn Container<RfcApi>
+    rfc_api: &'conn Container<RfcApi>,
 }
 
-    /// Create an empty RFC field desciption
-impl <'conn> RfcFieldDesc<'conn> {
+/// Create an empty RFC field desciption
+impl<'conn> RfcFieldDesc<'conn> {
     pub fn new(rfc_api: &'conn Container<RfcApi>) -> RfcFieldDesc<'conn> {
         RfcFieldDesc {
             name: [0 as u16; 31],
@@ -158,7 +158,7 @@ impl <'conn> RfcFieldDesc<'conn> {
             decimals: 0,
             type_desc_handle: null_mut(),
             extended_description: null_mut(),
-            rfc_api
+            rfc_api,
         }
     }
 
@@ -182,15 +182,22 @@ impl <'conn> RfcFieldDesc<'conn> {
         if &self.field_type == &RfcType::Structure {
             let mut err_trunk = RfcErrorInfo::new();
             let res = unsafe {
-                self.rfc_api. RfcGetStructureByIndex(fun, index, &mut structure_or_table, &mut err_trunk)
+                self.rfc_api.RfcGetStructureByIndex(
+                    fun,
+                    index,
+                    &mut structure_or_table,
+                    &mut err_trunk,
+                )
             };
             if !res.is_ok() {
                 return Err(err_trunk);
             }
         } else if &self.field_type == &RfcType::Table {
             let mut err_trunk = RfcErrorInfo::new();
-            let res =
-                unsafe { self.rfc_api.RfcGetTableByIndex(fun, index, &mut structure_or_table, &mut err_trunk) };
+            let res = unsafe {
+                self.rfc_api
+                    .RfcGetTableByIndex(fun, index, &mut structure_or_table, &mut err_trunk)
+            };
             if !res.is_ok() {
                 return Err(err_trunk);
             }
@@ -199,7 +206,7 @@ impl <'conn> RfcFieldDesc<'conn> {
         let struct_def = if structure_or_table.is_null() {
             None
         } else {
-            let res = RfcDecodedFieldDesc::from_handle(self.rfc_api,structure_or_table)?;
+            let res = RfcDecodedFieldDesc::from_handle(self.rfc_api, structure_or_table)?;
             Some(res)
         };
 
@@ -216,7 +223,7 @@ impl <'conn> RfcFieldDesc<'conn> {
             structure_or_table,
             p1: PhantomData,
             p2: PhantomData,
-            rfc_api: self.rfc_api
+            rfc_api: self.rfc_api,
         })
     }
 }
@@ -244,7 +251,7 @@ pub struct RfcParameterDesc<'conn> {
     rfc_api: &'conn Container<RfcApi>,
 }
 
-impl <'conn>RfcParameterDesc<'conn> {
+impl<'conn> RfcParameterDesc<'conn> {
     pub fn new(rfc_api: &'conn Container<RfcApi>) -> RfcParameterDesc<'conn> {
         RfcParameterDesc {
             name: [0 as u16; 31],
@@ -258,7 +265,7 @@ impl <'conn>RfcParameterDesc<'conn> {
             parameter_text: [0 as u16; 80],
             optional: 0 as u8,
             extended_description: null_mut(),
-            rfc_api
+            rfc_api,
         }
     }
 
@@ -296,15 +303,22 @@ impl <'conn>RfcParameterDesc<'conn> {
         if &self.field_type == &RfcType::Structure {
             let mut err_trunk = RfcErrorInfo::new();
             let res = unsafe {
-                self.rfc_api. RfcGetStructureByIndex(fun, index, &mut structure_or_table, &mut err_trunk)
+                self.rfc_api.RfcGetStructureByIndex(
+                    fun,
+                    index,
+                    &mut structure_or_table,
+                    &mut err_trunk,
+                )
             };
             if !res.is_ok() {
                 return Err(err_trunk);
             }
         } else if &self.field_type == &RfcType::Table {
             let mut err_trunk = RfcErrorInfo::new();
-            let res =
-                unsafe { self.rfc_api.RfcGetTableByIndex(fun, index, &mut structure_or_table, &mut err_trunk) };
+            let res = unsafe {
+                self.rfc_api
+                    .RfcGetTableByIndex(fun, index, &mut structure_or_table, &mut err_trunk)
+            };
             if !res.is_ok() {
                 return Err(err_trunk);
             }
@@ -313,7 +327,7 @@ impl <'conn>RfcParameterDesc<'conn> {
         let struct_def = if structure_or_table.is_null() {
             None
         } else {
-            let res = RfcDecodedFieldDesc::from_handle(self.rfc_api,structure_or_table)?;
+            let res = RfcDecodedFieldDesc::from_handle(self.rfc_api, structure_or_table)?;
             Some(res)
         };
 
@@ -349,7 +363,7 @@ pub struct RfcParameter<'conn, 'strct: 'conn> {
     structure_or_table: *mut RfcDataContainerHandle,
     p1: PhantomData<&'conn RfcConnectionHandle>,
     p2: PhantomData<&'strct RfcDataContainerHandle>,
-    rfc_api: &'conn Container<RfcApi>
+    rfc_api: &'conn Container<RfcApi>,
 }
 
 impl<'conn, 'strct: 'conn> RfcDecodedFieldDesc<'conn, 'strct> {
@@ -377,7 +391,12 @@ impl<'conn, 'strct: 'conn> RfcDecodedFieldDesc<'conn, 'strct> {
             let mut rfc_field_desc = RfcFieldDesc::new(rfc_api);
             for i in 0..count {
                 let res = unsafe {
-                    rfc_api.RfcGetFieldDescByIndex(type_handle, i, &mut rfc_field_desc, &mut err_trunk)
+                    rfc_api.RfcGetFieldDescByIndex(
+                        type_handle,
+                        i,
+                        &mut rfc_field_desc,
+                        &mut err_trunk,
+                    )
                 };
                 parameters.push(rfc_field_desc.to_parameter(i, handle)?);
                 if !res.is_ok() {
@@ -391,7 +410,8 @@ impl<'conn, 'strct: 'conn> RfcDecodedFieldDesc<'conn, 'strct> {
                 let sub_fields = if rfc_field_desc.type_desc_handle.is_null() {
                     None
                 } else {
-                    let d = RfcDecodedFieldDesc::from_handle(rfc_api, rfc_field_desc.type_desc_handle)?;
+                    let d =
+                        RfcDecodedFieldDesc::from_handle(rfc_api, rfc_field_desc.type_desc_handle)?;
                     Some(Box::new(d))
                 };
                 let field = RfcDecodedField {
@@ -455,7 +475,10 @@ impl<'conn, 'strct: 'conn> RfcParameter<'conn, 'strct> {
     pub fn append_rows(&self, count: u32) -> Result<(), RfcErrorInfo> {
         self.field_type.ensure_table()?;
         let mut err_trunk = RfcErrorInfo::new();
-        let res = unsafe { self.rfc_api.RfcAppendNewRows(self.structure_or_table, count, &mut err_trunk) };
+        let res = unsafe {
+            self.rfc_api
+                .RfcAppendNewRows(self.structure_or_table, count, &mut err_trunk)
+        };
         if res.is_ok() {
             Ok(())
         } else {
@@ -466,7 +489,10 @@ impl<'conn, 'strct: 'conn> RfcParameter<'conn, 'strct> {
     pub fn first_row(&self) -> Result<(), RfcErrorInfo> {
         self.field_type.ensure_table()?;
         let mut err_trunk = RfcErrorInfo::new();
-        let res = unsafe { self.rfc_api.RfcMoveToFirstRow(self.structure_or_table, &mut err_trunk) };
+        let res = unsafe {
+            self.rfc_api
+                .RfcMoveToFirstRow(self.structure_or_table, &mut err_trunk)
+        };
         if res.is_ok() {
             Ok(())
         } else {
@@ -477,7 +503,10 @@ impl<'conn, 'strct: 'conn> RfcParameter<'conn, 'strct> {
     pub fn next_row(&self) -> Result<(), RfcErrorInfo> {
         self.field_type.ensure_table()?;
         let mut err_trunk = RfcErrorInfo::new();
-        let res = unsafe { self.rfc_api.RfcMoveToNextRow(self.structure_or_table, &mut err_trunk) };
+        let res = unsafe {
+            self.rfc_api
+                .RfcMoveToNextRow(self.structure_or_table, &mut err_trunk)
+        };
         if res.is_ok() {
             Ok(())
         } else {
@@ -488,7 +517,10 @@ impl<'conn, 'strct: 'conn> RfcParameter<'conn, 'strct> {
     pub fn previous_row(&self) -> Result<(), RfcErrorInfo> {
         self.field_type.ensure_table()?;
         let mut err_trunk = RfcErrorInfo::new();
-        let res = unsafe { self.rfc_api.RfcMoveToPreviousRow(self.structure_or_table, &mut err_trunk) };
+        let res = unsafe {
+            self.rfc_api
+                .RfcMoveToPreviousRow(self.structure_or_table, &mut err_trunk)
+        };
         if res.is_ok() {
             Ok(())
         } else {
@@ -499,7 +531,10 @@ impl<'conn, 'strct: 'conn> RfcParameter<'conn, 'strct> {
     pub fn last_row(&self) -> Result<(), RfcErrorInfo> {
         self.field_type.ensure_table()?;
         let mut err_trunk = RfcErrorInfo::new();
-        let res = unsafe { self.rfc_api.RfcMoveToLastRow(self.structure_or_table, &mut err_trunk) };
+        let res = unsafe {
+            self.rfc_api
+                .RfcMoveToLastRow(self.structure_or_table, &mut err_trunk)
+        };
         if res.is_ok() {
             Ok(())
         } else {
@@ -510,7 +545,10 @@ impl<'conn, 'strct: 'conn> RfcParameter<'conn, 'strct> {
     pub fn set_row(&self, index: u32) -> Result<(), RfcErrorInfo> {
         self.field_type.ensure_table()?;
         let mut err_trunk = RfcErrorInfo::new();
-        let res = unsafe { self.rfc_api.RfcMoveTo(self.structure_or_table, index, &mut err_trunk) };
+        let res = unsafe {
+            self.rfc_api
+                .RfcMoveTo(self.structure_or_table, index, &mut err_trunk)
+        };
         if res.is_ok() {
             Ok(())
         } else {
@@ -522,8 +560,10 @@ impl<'conn, 'strct: 'conn> RfcParameter<'conn, 'strct> {
         self.field_type.ensure_table()?;
         let mut err_trunk = RfcErrorInfo::new();
         let mut row_count = 0;
-        let res =
-            unsafe { self.rfc_api.RfcGetRowCount(self.structure_or_table, &mut row_count, &mut err_trunk) };
+        let res = unsafe {
+            self.rfc_api
+                .RfcGetRowCount(self.structure_or_table, &mut row_count, &mut err_trunk)
+        };
         if res.is_ok() {
             Ok(row_count)
         } else {
@@ -606,11 +646,56 @@ impl<'conn, 'strct: 'conn> RfcParameter<'conn, 'strct> {
             return Err(RfcErrorInfo::custom("Read-only parameter"));
         }
         let mut err_trunk = RfcErrorInfo::new();
-        let res = unsafe { self.rfc_api.RfcSetIntByIndex(self.fun, self.index, value, &mut err_trunk) };
+        let res = unsafe {
+            self.rfc_api
+                .RfcSetIntByIndex(self.fun, self.index, value, &mut err_trunk)
+        };
         if !res.is_ok() {
             return Err(err_trunk);
         }
         Ok(())
+    }
+
+    pub fn set_float(&mut self, value: f32) -> Result<(), RfcErrorInfo> {
+        if !self.direction.can_write() {
+            return Err(RfcErrorInfo::custom("Read-only parameter"));
+        }
+        let mut err_trunk = RfcErrorInfo::new();
+        let res = unsafe {
+            self.rfc_api
+                .RfcSetFloatByIndex(self.fun, self.index, value, &mut err_trunk)
+        };
+        if !res.is_ok() {
+            return Err(err_trunk);
+        }
+        Ok(())
+    }
+
+    pub fn set_date(&mut self, value: &str) -> Result<(), RfcErrorInfo> {
+        if !self.direction.can_write() {
+            return Err(RfcErrorInfo::custom("Read-only parameter"));
+        }
+        if &self.field_type == &RfcType::Date {
+            let v = U16CString::from_str(value);
+            if let Err(e) = v {
+                return Err(RfcErrorInfo::custom(&e.to_string()));
+            }
+            let v = v.unwrap();
+            let mut err_trunk = RfcErrorInfo::new();
+            let v = v.into_vec_with_nul();
+            let res = unsafe {
+                self.rfc_api
+                    .RfcSetDateByIndex(self.fun, self.index, v.as_ptr(), &mut err_trunk)
+            };
+            if !res.is_ok() {
+                return Err(err_trunk);
+            }
+            Ok(())
+        } else {
+            Err(RfcErrorInfo::custom(
+                "Not a date datatype, cannot use set_date",
+            ))
+        }
     }
 
     pub fn get_chars(&self) -> Result<String, RfcErrorInfo> {
@@ -675,7 +760,12 @@ impl<'conn, 'strct: 'conn> RfcParameter<'conn, 'strct> {
         let mut reserve_len = 0;
         {
             let res = unsafe {
-                self.rfc_api.RfcGetStringLengthByIndex(self.fun, self.index, &mut reserve_len, &mut err_trunk)
+                self.rfc_api.RfcGetStringLengthByIndex(
+                    self.fun,
+                    self.index,
+                    &mut reserve_len,
+                    &mut err_trunk,
+                )
             };
             if !res.is_ok() {
                 return Err(err_trunk);
@@ -753,7 +843,12 @@ impl<'conn, 'strct: 'conn> RfcParameter<'conn, 'strct> {
         let mut reserve_len = 0;
         {
             let res = unsafe {
-                self.rfc_api.RfcGetStringLengthByIndex(self.fun, self.index, &mut reserve_len, &mut err_trunk)
+                self.rfc_api.RfcGetStringLengthByIndex(
+                    self.fun,
+                    self.index,
+                    &mut reserve_len,
+                    &mut err_trunk,
+                )
             };
             if !res.is_ok() {
                 return Err(err_trunk);
@@ -829,6 +924,22 @@ pub struct RfcApi {
         handle: *mut RfcDataContainerHandle,
         index: u32,
         value: i64,
+        error: *mut RfcErrorInfo,
+    ) -> RfcRc,
+
+    #[allow(non_snake_case)]
+    RfcSetFloatByIndex: unsafe extern "C" fn(
+        handle: *mut RfcDataContainerHandle,
+        index: u32,
+        value: f32,
+        error: *mut RfcErrorInfo,
+    ) -> RfcRc,
+
+    #[allow(non_snake_case)]
+    RfcSetDateByIndex: unsafe extern "C" fn(
+        handle: *mut RfcDataContainerHandle,
+        index: u32,
+        value: *const u16,
         error: *mut RfcErrorInfo,
     ) -> RfcRc,
 
@@ -941,12 +1052,16 @@ pub struct RfcApi {
     ) -> RfcRc,
 
     #[allow(non_snake_case)]
-    RfcMoveToLastRow: unsafe extern "C" fn(handle: *mut RfcDataContainerHandle, error: *mut RfcErrorInfo)
-        -> RfcRc,
+    RfcMoveToLastRow: unsafe extern "C" fn(
+        handle: *mut RfcDataContainerHandle,
+        error: *mut RfcErrorInfo,
+    ) -> RfcRc,
 
     #[allow(non_snake_case)]
-    RfcMoveToNextRow: unsafe extern "C" fn (handle: *mut RfcDataContainerHandle, error: *mut RfcErrorInfo)
-        -> RfcRc,
+    RfcMoveToNextRow: unsafe extern "C" fn(
+        handle: *mut RfcDataContainerHandle,
+        error: *mut RfcErrorInfo,
+    ) -> RfcRc,
 
     #[allow(non_snake_case)]
     RfcMoveToPreviousRow: unsafe extern "C" fn(
@@ -976,5 +1091,6 @@ pub struct RfcApi {
     ) -> RfcRc,
 
     #[allow(non_snake_case)]
-    RfcCloseConnection: unsafe extern "C" fn (handle: *mut RfcConnectionHandle, error: *mut RfcErrorInfo) -> RfcRc
+    RfcCloseConnection:
+        unsafe extern "C" fn(handle: *mut RfcConnectionHandle, error: *mut RfcErrorInfo) -> RfcRc,
 }

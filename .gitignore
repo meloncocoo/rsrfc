@@ -1,0 +1,6 @@
+*/**/.DS_Store
+target
+*.log
+saprfc/gnulinux/*
+saprfc/osx/*
+Cargo.lock
