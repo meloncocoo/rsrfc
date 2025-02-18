@@ -4,3 +4,4 @@ target
 saprfc/gnulinux/*
 saprfc/osx/*
 Cargo.lock
+config.toml
