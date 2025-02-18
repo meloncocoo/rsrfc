@@ -1,7 +1,9 @@
 */**/.DS_Store
 target
 *.log
-saprfc/gnulinux/*
-saprfc/osx/*
+libs/rfc_core/saprfc/gnulinux/*
+!libs/rfc_core/saprfc/gnulinux/.empty
+libs/rfc_core/saprfc/osx/*
+!libs/rfc_core/saprfc/osx/.empty
 Cargo.lock
 config.toml
