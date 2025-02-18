@@ -1,49 +1,15 @@
-use proc_macro2::Span;
-use syn::{
-    parse::Parse, Field as SynField, GenericArgument, Ident, LitStr, PathArguments, Result, Type,
-};
+use syn::{Field as SynField, GenericArgument, Ident, PathArguments, Result, Type};
 
-use crate::{
-    attr::{self, AttributeSpanWrapper},
-    util,
-};
-
-type Index = usize;
-
-pub struct AliasIdent {
-    alias_name: String,
-    span: Span,
-}
-
-enum FieldAttr {
-    Alias(Ident, LitStr),
-}
-
-impl Parse for FieldAttr {
-    fn parse(input: syn::parse::ParseStream) -> syn::Result<Self> {
-        let name: Ident = input.parse()?;
-        let name_str = name.to_string();
-
-        match &*name_str {
-            "alias" => Ok(FieldAttr::Alias(
-                name,
-                util::parse_eq(input, util::ALIAS_NOTE)?,
-            )),
-            _ => todo!(),
-        }
-    }
-}
+use crate::attr::{self, AttributeSpanWrapper};
 
 pub struct Field {
-    _field: SynField,
-    _index: usize,
     pub ty: Type,
     pub ident: Option<Ident>,
     alias: Option<AttributeSpanWrapper<String>>,
 }
 
 impl Field {
-    pub fn from_struct_field(field: &SynField, index: usize) -> Result<Self> {
+    pub fn from_struct_field(field: &SynField, _index: usize) -> Result<Self> {
         let SynField {
             ident, attrs, ty, ..
         } = field;
@@ -54,18 +20,16 @@ impl Field {
             let attribute_span = attr.attribute_span;
 
             match attr.item {
-                FieldAttr::Alias(_, value) => {
+                attr::FieldAttr::Alias(_ident, value) => {
                     alias = Some(AttributeSpanWrapper {
                         item: value.value(),
-                        attribute_span,
+                        attribute_span: attribute_span,
                     })
                 }
             }
         }
 
         Ok(Self {
-            _field: field.clone(),
-            _index: index,
             ident: ident.clone(),
             ty: ty.clone(),
             alias,

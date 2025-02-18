@@ -18,7 +18,7 @@ pub fn derive(item: DeriveInput) -> Result<TokenStream> {
             #from_table_impl
             #field_name: {
                 let idx = param.get_field_index_by_name(#alias_name)?;
-                let content = param.get_field_by_index(idx)?.get_chars()?;
+                let content = param.get_field_by_index(idx)?.get_chars()?.trim_end().into();
                 content
             },
         };

@@ -1,7 +1,10 @@
 use proc_macro2::Span;
 use syn::{
-    parse::Parse, punctuated::Punctuated, spanned::Spanned, token::Comma, Attribute, Ident, Result,
+    parse::Parse, punctuated::Punctuated, spanned::Spanned, token::Comma, Attribute, Ident, LitStr,
+    Result,
 };
+
+use crate::util;
 
 pub struct AttributeSpanWrapper<T> {
     pub item: T,
@@ -9,17 +12,21 @@ pub struct AttributeSpanWrapper<T> {
 }
 
 pub enum FieldAttr {
-    Alias(Ident),
+    Alias(Ident, LitStr),
 }
 
 impl Parse for FieldAttr {
-    fn parse(input: syn::parse::ParseStream) -> Result<Self> {
+    fn parse(input: syn::parse::ParseStream) -> syn::Result<Self> {
         let name: Ident = input.parse()?;
         let name_str = name.to_string();
 
-        println!("name_str: {}", name_str);
-
-        Ok(FieldAttr::Alias(name))
+        match &*name_str {
+            "alias" => Ok(FieldAttr::Alias(
+                name,
+                util::parse_eq(input, util::ALIAS_NOTE)?,
+            )),
+            _ => todo!(),
+        }
     }
 }
 

@@ -8,45 +8,8 @@ use rsrfc::*;
 fn main() -> Result<(), RfcErrorInfo> {
     let client = RfcClient::new();
 
-    // // Open the rfc dll or .so
-    // let rfc_dll = RfcLib::new().expect("Unable to open the rfc lib");
-
-    // // Establish an RFC connection. If you need to supply more parameters than
-    // // those supported by RfcConnectionParameters, simply call
-    // // RfcConnection::from_hashmap instead.
-    // let conn = RfcConnection::new(&conn_params, &rfc_dll);
-    // let conn = match conn {
-    //     Err(e) => {
-    //         eprintln!("oops {:?}", e);
-    //         return Err(e);
-    //     }
-    //     Ok(c) => c,
-    // };
-
     eprintln!("Fetching user names...");
     {
-        // // Get the RFC_READ_TABLE function
-        // let mut rfc_read_table = conn.get_function("RFC_READ_TABLE").expect("RFC_READ_TABLE");
-        // {
-        //     let query_table = rfc_read_table
-        //         .get_mut_parameter("QUERY_TABLE")
-        //         .ok_or(RfcErrorInfo::custom("unknown field QUERY_TABLE"))?;
-        //     query_table.set_string("USR02")?;
-        // }
-
-        // // The field we are interested in is called BNAME.
-        // // Tell this to the RFC_READ_TABLE function.
-        // {
-        //     let fields = rfc_read_table
-        //         .get_mut_parameter("FIELDS")
-        //         .ok_or(RfcErrorInfo::custom("unknown field FIELDNAME"))?;
-        //     let idx_fieldname = fields.get_field_index_by_name("FIELDNAME")?;
-        //     fields.append_rows(1)?;
-        //     fields.first_row()?;
-        //     let fieldname = fields.get_field_by_index(idx_fieldname)?;
-        //     fieldname.set_string("BNAME")?;
-        // }
-
         let mut params = HashMap::new();
         params.insert("QUERY_TABLE", ParamType::Value(ParamValue::Str("USR02")));
         params.insert(
