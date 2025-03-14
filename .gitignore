@@ -7,3 +7,4 @@ libs/rfc_core/saprfc/osx/*
 !libs/rfc_core/saprfc/osx/.empty
 Cargo.lock
 config.toml
+.env
