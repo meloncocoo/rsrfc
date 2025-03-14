@@ -17,21 +17,14 @@ use crate::rfc::*;
 pub use client::*;
 pub use rfc::RfcParameter;
 
-extern crate rfc_derive;
 pub use rfc_derive::*;
+
+use serde::Deserialize;
 
 /// Simple RFC connections require only a few parameters.
 /// You can use this struct to supply them.
-// #[derive(Debug, serde::Deserialize)]
-// pub struct RfcConnectionParameters<'a> {
-//     pub ashost: &'a str,
-//     pub sysnr: &'a str,
-//     pub client: &'a str,
-//     pub user: &'a str,
-//     pub passwd: &'a str,
-//     pub lang: &'a str,
-// }
-#[derive(Debug, serde::Deserialize)]
+// #[serde_as]
+#[derive(Debug, Deserialize)]
 pub struct RfcConnectionParameters {
     pub ashost: String,
     pub sysnr: String,
@@ -45,7 +38,7 @@ pub enum RfcValue {
     RfcString(String),
 }
 
-impl<'a> RfcConnectionParameters {
+impl RfcConnectionParameters {
     /// Convert to a more generic RfcConnParmHelper structure
     fn convert(&self) -> RfcConnParmHelper {
         let mut parms = RfcConnParmHelper::new();

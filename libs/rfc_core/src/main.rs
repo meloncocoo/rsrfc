@@ -1,41 +1,71 @@
-extern crate rsrfc;
-
 use std::collections::HashMap;
 
-use rsrfc::error::RfcErrorInfo;
-use rsrfc::*;
+use rsrfc::{error::*, *};
 
-fn main() -> Result<(), RfcErrorInfo> {
-    let client = RfcClient::new();
+fn main() {
+    println!("main函数开始执行");
 
-    eprintln!("Fetching user names...");
+    test();
+    println!("main函数执行完毕");
+}
+
+#[derive(Debug, RfcTable)]
+#[allow(dead_code)]
+struct Field {
+    #[sap(alias = "EBELN")]
+    order_code: String,
+    #[sap(alias = "TYPE")]
+    r#type: String,
+    #[sap(alias = "MSG")]
+    msg: String,
+}
+
+#[derive(Debug, RfcResult)]
+#[allow(dead_code)]
+struct SimpleResult {
+    #[sap(alias = "EV_EBELN")]
+    ev_ebeln: String,
+    #[sap(alias = "EV_TYPE")]
+    ev_type: String,
+    #[sap(alias = "EV_MSG")]
+    ev_msg: String,
+    #[sap(alias = "CT_DATA")]
+    et_data: Vec<Field>,
+}
+
+fn test() {
+    println!("Testing RfcClient creation and destruction");
     {
-        let mut params = HashMap::new();
-        params.insert("QUERY_TABLE", ParamType::Value(ParamValue::Str("USR02")));
-        params.insert(
-            "FIELDS",
-            ParamType::Table(vec![vec![("FIELDNAME", ParamValue::Str("BNAME"))]]),
-        );
-        // client.excute("RFC_READ_TABLE", params)?;
-
-        // Call the function
-        // rfc_read_table.call()?;
-
-        // Now the local data structures are filled with the response of the
-        // remote function: retrieve the data
-        // let data = rfc_read_table
-        //     .get_mut_parameter("DATA")
-        //     .ok_or(RfcErrorInfo::custom("unknown field DATA"))?;
-        // // Get the intger index of the field to allow quicker access later
-        // let idx_wa = data.get_field_index_by_name("WA")?;
-        // let num_users = data.get_row_count()?;
-        // eprintln!("Response from SAP has arrived: {} users.", num_users);
-        // for i in 0..num_users {
-        //     data.set_row(i)?;
-        //     let row_content = data.get_field_by_index(idx_wa)?.get_chars()?;
-        //     println!("Username: {}", row_content.trim_end());
-        // }
+        // Try to create a new RfcClient instance
+        let client_result = RfcClient::new();
+        match client_result {
+            Ok(client) => {
+                println!("RfcClient created successfully");
+                let mut params: HashMap<&str, ParamType<'_>> = HashMap::new();
+                params.insert("IV_ZSQDH", ParamType::Value(ParamValue::Str("********")));
+                params.insert(
+                    "CT_DATA",
+                    ParamType::Table(vec![vec![
+                        ("BANFN", ParamValue::Str("********")),
+                        ("BUKRS", ParamValue::Str("****")),
+                        ("WERKS", ParamValue::Str("****")),
+                        ("MENGE", ParamValue::Dec(1.0)),
+                        ("MEINS", ParamValue::Str("**")),
+                    ]]),
+                );
+                match client.execute::<SimpleResult>("********", params) {
+                    Ok(result) => {
+                        println!("RFC call successful");
+                        println!("RFC return result: {:?}", result);
+                    }
+                    Err(e) => {
+                        println!("RFC call failed: {}", e);
+                    }
+                }
+            }
+            Err(e) => {
+                println!("RfcClient creation failed: {}", e);
+            }
+        }
     }
-
-    Ok(())
 }

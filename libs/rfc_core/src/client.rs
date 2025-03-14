@@ -1,7 +1,10 @@
 use std::collections::HashMap;
+use std::env;
 
 use chrono::{DateTime, Local};
+use dotenv::dotenv;
 use figment::providers::{Env, Format, Toml};
+use figment::Figment;
 
 use crate::{
     RfcConnection, RfcConnectionParameters, RfcErrorInfo, RfcFunction, RfcLib, RfcParameter,
@@ -56,15 +59,56 @@ impl RfcLibTrait for RfcLib {
     /// export SAP_LANG="LANG"
     /// ```
     fn connect<'t>(&self) -> Result<RfcConnection, RfcErrorInfo> {
-        let figment = figment::Figment::from(Toml::file("config.toml").nested())
+        dotenv().ok();
+
+        // 首先尝试从 config.toml 文件中读取配置
+        let figment = Figment::from(Toml::file("config.toml").nested())
             .merge(Env::prefixed("SAP_").global())
             .select("SAP");
-        let conn_params = figment
-            .extract::<RfcConnectionParameters>()
-            .expect("error while load sap connection parameters");
+
+        // 尝试获取各个参数，优先使用环境变量
+        let ashost = get_param_value(&figment, "ashost", "SAP_ASHOST")?;
+        let sysnr = get_param_value(&figment, "sysnr", "SAP_SYSNR")?;
+        let client = get_param_value(&figment, "client", "SAP_CLIENT")?;
+        let user = get_param_value(&figment, "user", "SAP_USER")?;
+        let passwd = get_param_value(&figment, "passwd", "SAP_PASSWD")?;
+        let lang = get_param_value(&figment, "lang", "SAP_LANG")?;
+
+        let conn_params = RfcConnectionParameters {
+            ashost,
+            sysnr,
+            client,
+            user,
+            passwd,
+            lang,
+        };
+
         let conn = RfcConnection::new(&conn_params, &self)?;
         Ok(conn)
     }
+}
+
+// 辅助函数，从 figment 或环境变量中获取参数值
+fn get_param_value(figment: &Figment, key: &str, env_key: &str) -> Result<String, RfcErrorInfo> {
+    // 首先尝试从环境变量中获取
+    if let Ok(value) = env::var(env_key) {
+        if !value.is_empty() {
+            return Ok(value);
+        }
+    }
+
+    // 如果环境变量不存在或为空，尝试从 figment 中获取
+    if let Ok(value) = figment.extract_inner::<String>(key) {
+        if !value.is_empty() {
+            return Ok(value);
+        }
+    }
+
+    // 如果都不存在，返回错误
+    Err(RfcErrorInfo::custom(&format!(
+        "{} not set in environment variables or config.toml",
+        key
+    )))
 }
 
 trait RfcConnectionTrait {

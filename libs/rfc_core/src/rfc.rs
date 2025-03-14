@@ -1,3 +1,5 @@
+#![allow(non_snake_case)]
+
 use dlopen::wrapper::{Container, WrapperApi};
 use std::marker::PhantomData;
 use std::ptr::null_mut;
@@ -881,29 +883,24 @@ impl<'conn, 'strct: 'conn> RfcParameter<'conn, 'strct> {
 }
 
 #[derive(WrapperApi)]
-#[allow(non_snake_case)]
 pub struct RfcApi {
-    #[allow(non_snake_case)]
     RfcOpenConnection: unsafe extern "C" fn(
         parameters: *const RfcConnectionParameter,
         param_count: u32,
         error: *mut RfcErrorInfo,
     ) -> *mut RfcConnectionHandle,
 
-    #[allow(non_snake_case)]
     RfcGetFunctionDesc: unsafe extern "C" fn(
         handle: *mut RfcConnectionHandle,
         func_name: *const u16,
         error: *mut RfcErrorInfo,
     ) -> *mut RfcFunctionDescHandle,
 
-    #[allow(non_snake_case)]
     RfcCreateFunction: unsafe extern "C" fn(
         handle: *mut RfcFunctionDescHandle,
         error: *mut RfcErrorInfo,
     ) -> *mut RfcDataContainerHandle,
 
-    #[allow(non_snake_case)]
     RfcGetCharsByIndex: unsafe extern "C" fn(
         handle: *mut RfcDataContainerHandle,
         index: u32,
@@ -912,7 +909,6 @@ pub struct RfcApi {
         error: *mut RfcErrorInfo,
     ) -> RfcRc,
 
-    #[allow(non_snake_case)]
     RfcSetCharsByIndex: unsafe extern "C" fn(
         handle: *mut RfcDataContainerHandle,
         index: u32,
@@ -921,7 +917,6 @@ pub struct RfcApi {
         error: *mut RfcErrorInfo,
     ) -> RfcRc,
 
-    #[allow(non_snake_case)]
     RfcSetIntByIndex: unsafe extern "C" fn(
         handle: *mut RfcDataContainerHandle,
         index: u32,
@@ -929,7 +924,6 @@ pub struct RfcApi {
         error: *mut RfcErrorInfo,
     ) -> RfcRc,
 
-    #[allow(non_snake_case)]
     RfcSetFloatByIndex: unsafe extern "C" fn(
         handle: *mut RfcDataContainerHandle,
         index: u32,
@@ -937,7 +931,6 @@ pub struct RfcApi {
         error: *mut RfcErrorInfo,
     ) -> RfcRc,
 
-    #[allow(non_snake_case)]
     RfcSetDateByIndex: unsafe extern "C" fn(
         handle: *mut RfcDataContainerHandle,
         index: u32,
@@ -945,14 +938,12 @@ pub struct RfcApi {
         error: *mut RfcErrorInfo,
     ) -> RfcRc,
 
-    #[allow(non_snake_case)]
     RfcInvoke: unsafe extern "C" fn(
         handle: *mut RfcConnectionHandle,
         fun: *mut RfcDataContainerHandle,
         error: *mut RfcErrorInfo,
     ) -> RfcRc,
 
-    #[allow(non_snake_case)]
     RfcGetStructureByIndex: unsafe extern "C" fn(
         fun: *const RfcDataContainerHandle,
         index: u32,
@@ -960,7 +951,6 @@ pub struct RfcApi {
         error: *mut RfcErrorInfo,
     ) -> RfcRc,
 
-    #[allow(non_snake_case)]
     RfcGetTableByIndex: unsafe extern "C" fn(
         fun: *const RfcDataContainerHandle,
         index: u32,
@@ -968,7 +958,6 @@ pub struct RfcApi {
         error: *mut RfcErrorInfo,
     ) -> RfcRc,
 
-    #[allow(non_snake_case)]
     RfcGetStringByIndex: unsafe extern "C" fn(
         fun: *const RfcDataContainerHandle,
         index: u32,
@@ -978,7 +967,6 @@ pub struct RfcApi {
         error: *mut RfcErrorInfo,
     ) -> RfcRc,
 
-    #[allow(non_snake_case)]
     RfcGetStringLengthByIndex: unsafe extern "C" fn(
         fun: *const RfcDataContainerHandle,
         index: u32,
@@ -986,7 +974,6 @@ pub struct RfcApi {
         error: *mut RfcErrorInfo,
     ) -> RfcRc,
 
-    #[allow(non_snake_case)]
     RfcSetXStringByIndex: unsafe extern "C" fn(
         fun: *const RfcDataContainerHandle,
         index: u32,
@@ -995,7 +982,6 @@ pub struct RfcApi {
         error: *mut RfcErrorInfo,
     ) -> RfcRc,
 
-    #[allow(non_snake_case)]
     RfcGetXStringByIndex: unsafe extern "C" fn(
         fun: *const RfcDataContainerHandle,
         index: u32,
@@ -1005,27 +991,23 @@ pub struct RfcApi {
         error: *mut RfcErrorInfo,
     ) -> RfcRc,
 
-    #[allow(non_snake_case)]
     RfcDescribeType: unsafe extern "C" fn(
         fun: *const RfcDataContainerHandle,
         error: *mut RfcErrorInfo,
     ) -> *mut RfcDataContainerHandle,
 
-    #[allow(non_snake_case)]
     RfcGetFieldCount: unsafe extern "C" fn(
         tdh: *const RfcDataContainerHandle,
         count: *mut u32,
         error: *mut RfcErrorInfo,
     ) -> RfcRc,
 
-    #[allow(non_snake_case)]
     RfcGetParameterCount: unsafe extern "C" fn(
         fd: *const RfcFunctionDescHandle,
         count: *mut u32,
         error: *mut RfcErrorInfo,
     ) -> RfcRc,
 
-    #[allow(non_snake_case)]
     RfcGetFieldDescByIndex: unsafe extern "C" fn(
         tdh: *const RfcDataContainerHandle,
         index: u32,
@@ -1033,7 +1015,6 @@ pub struct RfcApi {
         error: *mut RfcErrorInfo,
     ) -> RfcRc,
 
-    #[allow(non_snake_case)]
     RfcGetParameterDescByIndex: unsafe extern "C" fn(
         fh: *const RfcFunctionDescHandle,
         index: u32,
@@ -1041,58 +1022,49 @@ pub struct RfcApi {
         error: *mut RfcErrorInfo,
     ) -> RfcRc,
 
-    #[allow(non_snake_case)]
     RfcDestroyFunction: unsafe extern "C" fn(
         handle: *mut RfcDataContainerHandle,
         error: *mut RfcErrorInfo,
     ) -> RfcRc,
 
-    #[allow(non_snake_case)]
     RfcMoveToFirstRow: unsafe extern "C" fn(
         handle: *mut RfcDataContainerHandle,
         error: *mut RfcErrorInfo,
     ) -> RfcRc,
 
-    #[allow(non_snake_case)]
     RfcMoveToLastRow: unsafe extern "C" fn(
         handle: *mut RfcDataContainerHandle,
         error: *mut RfcErrorInfo,
     ) -> RfcRc,
 
-    #[allow(non_snake_case)]
     RfcMoveToNextRow: unsafe extern "C" fn(
         handle: *mut RfcDataContainerHandle,
         error: *mut RfcErrorInfo,
     ) -> RfcRc,
 
-    #[allow(non_snake_case)]
     RfcMoveToPreviousRow: unsafe extern "C" fn(
         handle: *mut RfcDataContainerHandle,
         error: *mut RfcErrorInfo,
     ) -> RfcRc,
 
-    #[allow(non_snake_case)]
     RfcMoveTo: unsafe extern "C" fn(
         handle: *mut RfcDataContainerHandle,
         index: u32,
         error: *mut RfcErrorInfo,
     ) -> RfcRc,
 
-    #[allow(non_snake_case)]
     RfcGetRowCount: unsafe extern "C" fn(
         handle: *mut RfcDataContainerHandle,
         row_count: *mut u32,
         error: *mut RfcErrorInfo,
     ) -> RfcRc,
 
-    #[allow(non_snake_case)]
     RfcAppendNewRows: unsafe extern "C" fn(
         handle: *mut RfcDataContainerHandle,
         row_count: u32,
         error: *mut RfcErrorInfo,
     ) -> RfcRc,
 
-    #[allow(non_snake_case)]
     RfcCloseConnection:
         unsafe extern "C" fn(handle: *mut RfcConnectionHandle, error: *mut RfcErrorInfo) -> RfcRc,
 }
