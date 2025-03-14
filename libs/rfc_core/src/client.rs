@@ -135,13 +135,13 @@ pub struct RfcClient<'t> {
 }
 
 impl<'client> RfcClient<'client> {
-    pub fn new() -> Self {
-        let rfc_lib = RfcLib::new().expect("Unable to open the rfc lib");
+    pub fn new() -> Result<Self, RfcErrorInfo> {
+        let rfc_lib = RfcLib::new().map_err(|e| RfcErrorInfo::custom(&e))?;
 
-        Self {
+        Ok(Self {
             rfc_lib,
             params: HashMap::new(),
-        }
+        })
     }
 
     pub fn clear(&mut self) {
@@ -157,23 +157,27 @@ impl<'client> RfcClient<'client> {
         name: &str,
         params: HashMap<&str, ParamType>,
     ) -> Result<T, RfcErrorInfo> {
-        match self.rfc_lib.connect()?.with_method(name) {
-            Ok(mut method) => {
-                params
-                    .into_iter()
-                    .for_each(|(name, value)| match method.get_mut_parameter(name) {
-                        Some(param) => match value {
-                            ParamType::Value(v) => param.set_value(v),
-                            ParamType::Struct(v) => param.set_struct(v),
-                            ParamType::Table(v) => param.set_table(v),
-                        },
-                        None => eprintln!("input param {} not exists.", name),
-                    });
+        let conn = self.rfc_lib.connect()?;
+        let mut method = conn.with_method(name)?;
 
-                method.call()?;
-                T::from_method(&mut method)
-            }
-            Err(err) => Err(err),
-        }
+        params
+            .into_iter()
+            .for_each(|(name, value)| match method.get_mut_parameter(name) {
+                Some(param) => match value {
+                    ParamType::Value(v) => param.set_value(v),
+                    ParamType::Struct(v) => param.set_struct(v),
+                    ParamType::Table(v) => param.set_table(v),
+                },
+                None => eprintln!("input param {} not exists.", name),
+            });
+
+        method.call()?;
+        let result = T::from_method(&mut method);
+
+        // 确保 conn 在整个方法执行期间保持有效
+        // drop(method);
+        // drop(conn);
+
+        result
     }
 }
