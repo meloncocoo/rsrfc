@@ -660,7 +660,7 @@ impl<'conn, 'strct: 'conn> RfcParameter<'conn, 'strct> {
         Ok(())
     }
 
-    pub fn set_float(&mut self, value: f32) -> Result<(), RfcErrorInfo> {
+    pub fn set_float(&mut self, value: f64) -> Result<(), RfcErrorInfo> {
         if !self.direction.can_write() {
             return Err(RfcErrorInfo::custom("Read-only parameter"));
         }
@@ -927,7 +927,7 @@ pub struct RfcApi {
     RfcSetFloatByIndex: unsafe extern "C" fn(
         handle: *mut RfcDataContainerHandle,
         index: u32,
-        value: f32,
+        value: f64,
         error: *mut RfcErrorInfo,
     ) -> RfcRc,
 

@@ -25,7 +25,7 @@ pub trait FromTable {
 #[derive(Debug, Clone)]
 pub enum ParamValue<'a> {
     Str(&'a str),
-    Dec(f32),
+    Dec(f64),
     Date(DateTime<Local>),
     Int(i64),
 }
