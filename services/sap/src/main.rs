@@ -10,6 +10,7 @@ fn main() {
 }
 
 #[derive(Debug, RfcTable)]
+#[allow(dead_code)]
 struct Field {
     #[sap(alias = "EBELN")]
     order_code: String,
@@ -20,6 +21,7 @@ struct Field {
 }
 
 #[derive(Debug, RfcResult)]
+#[allow(dead_code)]
 struct SimpleResult {
     #[sap(alias = "EV_EBELN")]
     ev_ebeln: String,

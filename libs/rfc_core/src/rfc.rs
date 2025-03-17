@@ -630,7 +630,7 @@ impl<'conn, 'strct: 'conn> RfcParameter<'conn, 'strct> {
                     self.fun,
                     self.index,
                     v.as_ptr(),
-                    value.len() as u32,
+                    (v.len() - 1) as u32,
                     &mut err_trunk,
                 )
             };

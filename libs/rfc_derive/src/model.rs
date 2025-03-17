@@ -12,8 +12,6 @@ impl Model {
     pub fn from_item(item: &DeriveInput) -> Result<Self> {
         let DeriveInput { data, .. } = &item;
 
-        println!("data: {:#?}", data);
-
         let fields = match *data {
             syn::Data::Struct(DataStruct {
                 fields: Fields::Named(FieldsNamed { ref named, .. }),
